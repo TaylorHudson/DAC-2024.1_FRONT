@@ -1,0 +1,9 @@
+.form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 14px;
+  border: 1px solid rgb(235, 235, 235);
+  border-radius: 8px;
+}
