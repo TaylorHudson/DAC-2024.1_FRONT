@@ -4,7 +4,7 @@ import CreateCategoryView from "./views/CreateCategoryView";
 function App() {
   return (
     <div className="App">
-      <CreateCategoryView />   
+      <CreateProductView />   
     </div>
   );
 }
