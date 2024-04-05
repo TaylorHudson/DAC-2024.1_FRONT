@@ -1,10 +1,10 @@
-import CreateProductView from "./views/CreateProductView";
-import CreateCategoryView from "./views/CreateCategoryView";
+import "bootswatch/dist/litera/bootstrap.css";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   return (
     <div className="App">
-      <CreateProductView />   
+      <AppRoutes />
     </div>
   );
 }
