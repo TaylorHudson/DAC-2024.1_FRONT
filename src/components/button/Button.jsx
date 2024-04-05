@@ -1,8 +1,10 @@
 import '../button/button.css';
 
-function Button({type="submit", name}) {
+function Button({name, onClick, className}) {
   return (
-    <input className="button" type={type} value={name} />
+    <button className={className} type="button" onClick={onClick}>
+      {name}
+    </button>
   );
 }
 
