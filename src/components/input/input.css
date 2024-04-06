@@ -1,0 +1,13 @@
+.input-text-container {
+  display: flex;
+  flex-direction: column; 
+  padding-bottom: 1.5rem;
+}
+
+.input-text {
+  display: flex;
+  height: 3rem;
+  width: 100%;
+  padding-left: 0.5rem;
+  font-size: 18px;
+}
