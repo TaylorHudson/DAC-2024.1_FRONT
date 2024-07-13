@@ -5,7 +5,7 @@ import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import NavBar from "../../components/nav-bar/NavBar";
 import Text from "../../components/text/Text";
-import { httpDelete } from "../../services/AxiosService";
+import axios from "axios";
 
 function DeleteCategoryView() {
   const params = useParams();
@@ -14,13 +14,15 @@ function DeleteCategoryView() {
   const [identifier, setIdentifier] = useState(id);
 
   async function handleOnClick() {
-    try {
-      if (identifier) {
-        await httpDelete(`/category/${id}`)
+    if (identifier) {
+      await axios.delete(
+        `http://localhost:8081/api/category/${id}`
+      ).then(response => {
+        console.log(response);
         history.push("/category/find");
-      }
-    } catch (error) {
-      console.log(error);
+      }).catch(error => {
+        console.log(error.response);
+      });
     }
   }
 

@@ -5,7 +5,7 @@ import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
 import { useHistory, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { httpGet, httpPut } from '../../services/AxiosService';
+import axios from "axios";
 
 function UpdateProductView() {
   const history = useHistory();
@@ -18,17 +18,19 @@ function UpdateProductView() {
   const [categoryId, setCategoryId] = useState("");
 
   async function find() {
-    try {
-      const response = await httpGet(`product/${id}`);
+    await axios.get(
+      `http://localhost:8081/api/product/${id}`
+    ).then(response => {
+      console.log(response);
       const product = response.data;
       setName(product.name);
       setDescription(product.description);
       setPrice(product.price);
       setImage(product.images[0]);
       setCategoryId(product.categoryId);
-    } catch (error) {
-      console.log(error);
-    }
+    }).catch(error => {
+      console.log(error.response);
+    });      
   }
 
   useEffect(() => {
@@ -36,20 +38,22 @@ function UpdateProductView() {
   }, []);
 
   async function handleOnClick() {
-    try {
-      await httpPut(`product/${id}`, {
+    await axios.put(
+      `http://localhost:8081/api/product`,
+      {
+        id,
         name,
         description,
         price,
-        images: [
-          image
-        ],
+        images: [image],
         categoryId
-      });
+      }
+    ).then(response => {
+      console.log(response);
       history.push(`/product/find`);
-    } catch (error) {
-      console.log(error);
-    }
+    }).catch(error => {
+      console.log(error.response);
+    });      
   }
 
   const handleOnChangeName = (e) => {

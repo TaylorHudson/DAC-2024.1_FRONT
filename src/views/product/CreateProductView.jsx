@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
-import { useHistory } from 'react-router-dom';
-import { httpPost } from "../../services/AxiosService";
+import axios from "axios";
 
 function CreateProductView() {
   const history = useHistory();
@@ -16,18 +16,21 @@ function CreateProductView() {
   const [categoryId, setCategoryId] = useState("");
 
   async function handleOnClick() {
-    try {
-      await httpPost("/product", {
+    await axios.post(
+      "http://localhost:8081/api/product",
+      {
         name,
         description,
         price,
         images: [image],
         categoryId
-      });
+      }
+    ).then(response => {
+      console.log(response);
       history.push("/product/find");
-    } catch (error) {
-      console.log(error);
-    }
+    }).catch(error => {
+      console.log(error.response);
+    });            
   }
 
   const handleOnChangeName = (e) => {

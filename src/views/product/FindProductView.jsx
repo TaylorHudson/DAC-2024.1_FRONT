@@ -7,7 +7,7 @@ import ProductTable from "../../components/table/ProductTable";
 import Text from "../../components/text/Text";
 import Spinner from "../../components/spinner/Spinner";
 import { useHistory } from 'react-router-dom';
-import { httpGet } from "../../services/AxiosService";
+import axios from "axios";
 
 function FindProductView() {
   const history = useHistory();
@@ -16,13 +16,15 @@ function FindProductView() {
   const [loading, setLoading] = useState(true);
 
   async function findAll() {
-    try {
-      const response = await httpGet("/product");
+    await axios.get(
+      "http://localhost:8081/api/product"
+    ).then(response => {
+      console.log(response);
       setProducts(response.data);
       setLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
+    }).catch(error => {
+      console.log(error.response);
+    });      
   }
 
   useEffect(() => {
@@ -36,14 +38,18 @@ function FindProductView() {
   }
 
   async function handleOnClickFilterButton() {
+    let uri = "";
     if (identifier) {
-      try {
-        const response = await httpGet(`/product/${identifier}`);
-        setProducts([response.data]);
-      } catch (error) {
-        console.log(error);
-      }
+      uri = `/${identifier}`;
     }
+    await axios.get(
+      `http://localhost:8080/api/product${uri}`
+    ).then(response => {
+      console.log(response);
+      setProducts(response.data);
+    }).catch(error => {
+      console.log(error.response);
+    });
   }
 
   const handleEditButton = (id) => history.push(`/product/update/${id}`);

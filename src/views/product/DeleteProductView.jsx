@@ -5,7 +5,7 @@ import Input from "../../components/input/Input";
 import NavBar from "../../components/nav-bar/NavBar";
 import Text from "../../components/text/Text";
 import { useState } from "react";
-import { httpDelete } from "../../services/AxiosService";
+import axios from "axios";
 
 function DeleteProductView() {
   const params = useParams();
@@ -14,13 +14,15 @@ function DeleteProductView() {
   const [identifier, setIdentifier] = useState(id);
 
   async function handleOnClick() {
-    try {
-      if (identifier) {
-        await httpDelete(`/product/${id}`);
+    if (identifier) {
+      await axios.delete(
+        `http://localhost:8081/api/product/${id}`
+      ).then(response => {
+        console.log(response);
         history.push("/product/find");
-      }
-    } catch (error) {
-      console.log(error);
+      }).catch(error => {
+        console.log(error.response);
+      });      
     }
   }
 

@@ -7,7 +7,7 @@ import Button from '../../components/button/Button';
 import { useHistory } from 'react-router-dom';
 import Spinner from '../../components/spinner/Spinner';
 import CategoryTable from '../../components/table/CategoryTable';
-import { httpGet } from '../../services/AxiosService';
+import axios from 'axios';
 
 function FindCategoryView() {
   const history = useHistory();
@@ -16,13 +16,15 @@ function FindCategoryView() {
   const [loading, setLoading] = useState(true);
 
   async function findAll() {
-    try {
-      const response = await httpGet(`/category`);
+    await axios.get(
+      "http://localhost:8081/api/category"
+    ).then(response => {
+      console.log(response);
       setCategories(response.data);
       setLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
+    }).catch(error => {
+      console.log(error.response);
+    });      
   }
 
   useEffect(() => {
@@ -30,14 +32,18 @@ function FindCategoryView() {
   }, []);
 
   async function handleOnClickFilterButton() {
-    if (identifier) {
-      try {
-        const response = await httpGet(`/category/${identifier}`);
-        setCategories([response.data]);
-      } catch (error) {
-        console.log(error);
-      }
+    let uri = `/category/${identifier}`
+    if (!identifier) {
+      uri = "/category";
     }
+    await axios.get(
+      `http://localhost:8081/api${uri}`
+    ).then(response => {
+      console.log(response);
+      setCategories(response.data);
+    }).catch(error => {
+      console.log(error.response);
+    });
   }
 
   const handleOnChangeIdentifier = (e) => {
