@@ -5,7 +5,7 @@ import Input from "../../components/input/Input";
 import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
-import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
+import { showErrorMessage, showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
 import axios from "axios";
 
 function UpdateProductView() {
@@ -37,6 +37,12 @@ function UpdateProductView() {
   }, []);
 
   async function handleOnClick() {
+    const [hasErrors, errors] = validateFields();
+    if (hasErrors) {
+      showErrors(errors);
+      return;
+    }
+
     await axios.put(
       `http://localhost:8081/api/product`,
       {
@@ -85,6 +91,32 @@ function UpdateProductView() {
     setPrice("");
     setImage("");
     setCategoryId("");
+  } 
+
+  const validateFields = () => {
+    const errors = [];
+
+    if (!name) {
+      errors.push("Campo nome é obrigatório!");
+    }
+    if (!description) {
+      errors.push("Campo descrição é obrigatório!");
+    }
+    if (!price) {
+      errors.push("Campo preço é obrigatório!");
+    }
+    if (!categoryId) {
+      errors.push("Campo id da categoria é obrigatório!");
+    }
+
+    const hasErrors = errors.length > 0;
+    return [hasErrors, errors];
+  }
+
+  const showErrors = (errors) => {
+    errors.forEach((message, index) => {
+      showErrorMessage(message);
+    });
   } 
   
   return (

@@ -59,6 +59,7 @@ function DeleteCategoryView() {
             placeholder="Identificador"
             value={identifier}
             handleOnChange={handleOnChangeIdentifier}
+            disabled={true}
           />
 
           <div className="d-flex justify-content-center align-itens-center">

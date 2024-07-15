@@ -16,7 +16,7 @@ function DeleteProductView() {
   async function handleOnClick() {
     if (identifier) {
       await axios.delete(
-        `http://localhost:8081/api/product/${id}`
+        `http://localhost:8081/api/product/${identifier}`
       ).then(response => {
         showSuccessMessage("Produto deletado com sucesso!");
         clearFields();
@@ -59,6 +59,7 @@ function DeleteProductView() {
             placeholder="Identificador"
             value={identifier}
             handleOnChange={handleOnChangeIdentifier}
+            disabled={true}
           />
 
           <div className="d-flex justify-content-center align-itens-center">
