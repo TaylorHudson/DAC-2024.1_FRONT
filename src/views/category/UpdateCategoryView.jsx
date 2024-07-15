@@ -1,11 +1,12 @@
 import React from 'react'
+import { useHistory, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
-import { useHistory, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
 import axios from 'axios';
 
 function UpdateCategoryView() {
@@ -24,7 +25,7 @@ function UpdateCategoryView() {
       setName(category.name);
       setDescription(category.description);
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });
   }
 
@@ -41,10 +42,10 @@ function UpdateCategoryView() {
         description,
       }
     ).then(response => {
-      console.log(response);
-      history.push(`/category/find`);
+      showSuccessMessage("Categoria atualizada com sucesso!");
+      clearFields();
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });
   }
 
@@ -54,6 +55,11 @@ function UpdateCategoryView() {
 
   const handleOnChangeDescription = (e) => {
     setDescription(e.target.value);
+  }
+
+  const clearFields = () => {
+    setName("");
+    setDescription("");
   }
 
   return (

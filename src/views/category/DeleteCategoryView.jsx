@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Button from "../../components/button/Button";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import NavBar from "../../components/nav-bar/NavBar";
 import Text from "../../components/text/Text";
+import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
 import axios from "axios";
 
 function DeleteCategoryView() {
   const params = useParams();
   const id = params.id;
-  const history = useHistory();
   const [identifier, setIdentifier] = useState(id);
 
   async function handleOnClick() {
@@ -18,10 +18,10 @@ function DeleteCategoryView() {
       await axios.delete(
         `http://localhost:8081/api/category/${id}`
       ).then(response => {
-        console.log(response);
-        history.push("/category/find");
+        showSuccessMessage("Categoria deletada com sucesso!");
+        clearFields();
       }).catch(error => {
-        console.log(error.response);
+        showWarningMessage(error.response.data.message);
       });
     }
   }
@@ -30,6 +30,10 @@ function DeleteCategoryView() {
     const inputValue = e.target.value;
     const formattedValue = inputValue.replace(/[^0-9]/g, '');
     setIdentifier(formattedValue);
+  }
+
+  const clearFields = () => {
+    setIdentifier("");
   }
 
   return (

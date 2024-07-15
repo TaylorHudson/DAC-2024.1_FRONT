@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import Form from '../../components/form/Form';
 import Button from "../../components/button/Button";
 import NavBar from '../../components/nav-bar/NavBar';
 import Input from '../../components/input/Input';
-import Text from '../../components/text/Text'
+import Text from '../../components/text/Text';
+import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
 import axios from 'axios';
 
 function CreateCategoryView() {
-  const history = useHistory();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -20,10 +19,10 @@ function CreateCategoryView() {
         description,
       }
     ).then(response => {
-      console.log(response);
-      history.push("/category/find");
+      showSuccessMessage("Categoria criada com sucesso!")
+      clearFields();
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });
   }
 
@@ -33,6 +32,11 @@ function CreateCategoryView() {
 
   const handleOnChangeDescription = (e) => {
     setDescription(e.target.value);
+  }
+
+  const clearFields = () => {
+    setName("");
+    setDescription("");
   }
 
   return (

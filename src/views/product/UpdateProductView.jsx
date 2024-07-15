@@ -1,14 +1,14 @@
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
-import { useHistory, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
 import axios from "axios";
 
 function UpdateProductView() {
-  const history = useHistory();
   const params = useParams();
   const id = params.id;
   const [name, setName] = useState("");
@@ -21,7 +21,6 @@ function UpdateProductView() {
     await axios.get(
       `http://localhost:8081/api/product/${id}`
     ).then(response => {
-      console.log(response);
       const product = response.data;
       setName(product.name);
       setDescription(product.description);
@@ -29,7 +28,7 @@ function UpdateProductView() {
       setImage(product.images[0]);
       setCategoryId(product.categoryId);
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });      
   }
 
@@ -49,10 +48,10 @@ function UpdateProductView() {
         categoryId
       }
     ).then(response => {
-      console.log(response);
-      history.push(`/product/find`);
+      showSuccessMessage("Produto atualizado com sucesso!");
+      clearFields();
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });      
   }
 
@@ -80,6 +79,14 @@ function UpdateProductView() {
     setCategoryId(formattedCategoryId);
   }
 
+  const clearFields = () => {
+    setName("");
+    setDescription("");
+    setPrice("");
+    setImage("");
+    setCategoryId("");
+  } 
+  
   return (
     <div className="container">
       <NavBar />

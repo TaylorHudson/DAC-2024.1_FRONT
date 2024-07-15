@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
+import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
 import axios from "axios";
 
 function CreateProductView() {
-  const history = useHistory();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -26,10 +25,10 @@ function CreateProductView() {
         categoryId
       }
     ).then(response => {
-      console.log(response);
-      history.push("/product/find");
+      showSuccessMessage("Produto criado com sucesso!");
+      clearFields();
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });            
   }
 
@@ -56,6 +55,14 @@ function CreateProductView() {
     const formattedCategoryId = inputValue.replace(/[^0-9]/g, '');
     setCategoryId(formattedCategoryId);
   }
+
+  const clearFields = () => {
+    setName("");
+    setDescription("");
+    setPrice("");
+    setImage("");
+    setCategoryId("");
+  } 
 
   return (
     <div className="container">

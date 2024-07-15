@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import NavBar from '../../components/nav-bar/NavBar';
 import Form from '../../components/form/Form';
 import Text from '../../components/text/Text';
 import Input from '../../components/input/Input';
 import Button from '../../components/button/Button';
-import { useHistory } from 'react-router-dom';
 import Spinner from '../../components/spinner/Spinner';
 import CategoryTable from '../../components/table/CategoryTable';
+import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
 import axios from 'axios';
 
 function FindCategoryView() {
@@ -19,11 +20,10 @@ function FindCategoryView() {
     await axios.get(
       "http://localhost:8081/api/category"
     ).then(response => {
-      console.log(response);
       setCategories(response.data);
       setLoading(false);
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });      
   }
 
@@ -39,10 +39,9 @@ function FindCategoryView() {
     await axios.get(
       `http://localhost:8081/api${uri}`
     ).then(response => {
-      console.log(response);
       setCategories(response.data);
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });
   }
 

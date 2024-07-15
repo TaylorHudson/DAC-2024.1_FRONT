@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useHistory } from 'react-router-dom';
 import Button from "../../components/button/Button";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
@@ -6,7 +7,7 @@ import NavBar from "../../components/nav-bar/NavBar";
 import ProductTable from "../../components/table/ProductTable";
 import Text from "../../components/text/Text";
 import Spinner from "../../components/spinner/Spinner";
-import { useHistory } from 'react-router-dom';
+import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
 import axios from "axios";
 
 function FindProductView() {
@@ -19,11 +20,10 @@ function FindProductView() {
     await axios.get(
       "http://localhost:8081/api/product"
     ).then(response => {
-      console.log(response);
       setProducts(response.data);
       setLoading(false);
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });      
   }
 
@@ -31,25 +31,24 @@ function FindProductView() {
     findAll();
   }, []);
 
-  const handleOnChangeIdentifier = (e) => {
-    const inputValue = e.target.value;
-    const formattedValue = inputValue.replace(/[^0-9]/g, '');
-    setIdentifier(formattedValue);
-  }
-
   async function handleOnClickFilterButton() {
     let uri = "";
     if (identifier) {
       uri = `/${identifier}`;
     }
     await axios.get(
-      `http://localhost:8080/api/product${uri}`
+      `http://localhost:8081/api/product${uri}`
     ).then(response => {
-      console.log(response);
       setProducts(response.data);
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });
+  }
+
+  const handleOnChangeIdentifier = (e) => {
+    const inputValue = e.target.value;
+    const formattedValue = inputValue.replace(/[^0-9]/g, '');
+    setIdentifier(formattedValue);
   }
 
   const handleEditButton = (id) => history.push(`/product/update/${id}`);
