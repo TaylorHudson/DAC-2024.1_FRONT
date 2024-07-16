@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Form from '../../components/form/Form';
 import Button from "../../components/button/Button";
 import NavBar from '../../components/nav-bar/NavBar';
 import Input from '../../components/input/Input';
 import Text from '../../components/text/Text'
-import { useHistory } from 'react-router-dom';
-import { httpPost } from '../../services/AxiosService';
+import axios from 'axios';
 
 function CreateCategoryView() {
   const history = useHistory();
@@ -13,18 +13,18 @@ function CreateCategoryView() {
   const [description, setDescription] = useState("");
 
   async function handleOnClick() {
-    try {
-      await httpPost(
-        "/category", 
-        {
-          name,
-          description,
-        }
-      );
+    await axios.post(
+      "http://localhost:8081/api/category",
+      {
+        name,
+        description,
+      }
+    ).then(response => {
+      console.log(response);
       history.push("/category/find");
-    } catch (error) {
-      console.log(error);
-    }
+    }).catch(error => {
+      console.log(error.response);
+    });
   }
 
   const handleOnChangeName = (e) => {

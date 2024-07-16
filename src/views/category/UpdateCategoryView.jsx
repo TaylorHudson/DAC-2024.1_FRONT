@@ -6,7 +6,7 @@ import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
 import { useHistory, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { httpGet, httpPut } from '../../services/AxiosService';
+import axios from 'axios';
 
 function UpdateCategoryView() {
   const history = useHistory();
@@ -16,10 +16,16 @@ function UpdateCategoryView() {
   const [description, setDescription] = useState("");
 
   async function find() {
-    const response = await httpGet(`category/${id}`);
-    const category = response.data;
-    setName(category.name);
-    setDescription(category.description);
+    await axios.get(
+      `http://localhost:8081/api/category/${id}`
+    ).then(response => {
+      console.log(response);
+      const category = response.data;
+      setName(category.name);
+      setDescription(category.description);
+    }).catch(error => {
+      console.log(error.response);
+    });
   }
 
   useEffect(() => {
@@ -27,15 +33,19 @@ function UpdateCategoryView() {
   }, []);
 
   async function handleOnClick() {
-    try {
-      await httpPut(`category/${id}`, {
+    await axios.put(
+      `http://localhost:8081/api/category`,
+      {
+        id,
         name,
         description,
-      });
+      }
+    ).then(response => {
+      console.log(response);
       history.push(`/category/find`);
-    } catch (error) {
-      console.log(error);
-    }
+    }).catch(error => {
+      console.log(error.response);
+    });
   }
 
   const handleOnChangeName = (e) => {
