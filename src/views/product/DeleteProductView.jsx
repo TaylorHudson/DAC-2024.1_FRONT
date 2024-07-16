@@ -6,24 +6,23 @@ import Input from "../../components/input/Input";
 import NavBar from "../../components/nav-bar/NavBar";
 import Text from "../../components/text/Text";
 import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
-import axios from "axios";
+import ProductApiService from '../../services/ProductApiService';
 
 function DeleteProductView() {
+  const service = new ProductApiService();
   const params = useParams();
   const id = params.id;
   const [identifier, setIdentifier] = useState(id);
 
   async function handleOnClick() {
-    if (identifier) {
-      await axios.delete(
-        `http://localhost:8081/api/product/${identifier}`
-      ).then(response => {
-        showSuccessMessage("Produto deletado com sucesso!");
-        clearFields();
-      }).catch(error => {
-        showWarningMessage(error.response.data.message);
-      });      
-    }
+    service.delete(
+      `http://localhost:8081/api/product/${identifier}`
+    ).then(response => {
+      showSuccessMessage("Produto deletado com sucesso!");
+      clearFields();
+    }).catch(error => {
+      showWarningMessage(error.response.data.message);
+    });      
   }
 
   const handleOnChangeIdentifier = (e) => {

@@ -6,24 +6,22 @@ import Input from "../../components/input/Input";
 import NavBar from "../../components/nav-bar/NavBar";
 import Text from "../../components/text/Text";
 import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
-import axios from "axios";
+import CategoryApiService from '../../services/CategoryApiService';
 
 function DeleteCategoryView() {
+  const service = new CategoryApiService();
   const params = useParams();
   const id = params.id;
   const [identifier, setIdentifier] = useState(id);
 
   async function handleOnClick() {
-    if (identifier) {
-      await axios.delete(
-        `http://localhost:8081/api/category/${id}`
-      ).then(response => {
-        showSuccessMessage("Categoria deletada com sucesso!");
-        clearFields();
-      }).catch(error => {
-        showWarningMessage(error.response.data.message);
-      });
-    }
+    service.delete(id)
+    .then(response => {
+      showSuccessMessage("Categoria deletada com sucesso!");
+      clearFields();
+    }).catch(error => {
+      showWarningMessage(error.response.data.message);
+    });
   }
 
   const handleOnChangeIdentifier = (e) => {

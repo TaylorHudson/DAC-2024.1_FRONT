@@ -5,9 +5,10 @@ import NavBar from '../../components/nav-bar/NavBar';
 import Input from '../../components/input/Input';
 import Text from '../../components/text/Text';
 import { showErrorMessage, showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
-import axios from 'axios';
+import CategoryApiService from '../../services/CategoryApiService';
 
 function CreateCategoryView() {
+  const service = new CategoryApiService();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -18,8 +19,7 @@ function CreateCategoryView() {
       return;
     }
 
-    await axios.post(
-      "http://localhost:8081/api/category",
+    service.create(
       {
         name,
         description,

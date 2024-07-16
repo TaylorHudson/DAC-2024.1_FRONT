@@ -7,19 +7,19 @@ import Input from '../../components/input/Input';
 import Button from '../../components/button/Button';
 import Spinner from '../../components/spinner/Spinner';
 import CategoryTable from '../../components/table/CategoryTable';
-import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
-import axios from 'axios';
+import { showWarningMessage } from '../../components/toastr/Toastr';
+import CategoryApiService from '../../services/CategoryApiService';
 
 function FindCategoryView() {
+  const service = new CategoryApiService();
   const history = useHistory();
   const [identifier, setIdentifier] = useState("");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   async function findAll() {
-    await axios.get(
-      "http://localhost:8081/api/category"
-    ).then(response => {
+    service.findAll()
+    .then(response => {
       setCategories(response.data);
       setLoading(false);
     }).catch(error => {
@@ -32,13 +32,13 @@ function FindCategoryView() {
   }, []);
 
   async function handleOnClickFilterButton() {
-    let uri = `/category/${identifier}`
     if (!identifier) {
-      uri = "/category";
+      findAll();
+      return;
     }
-    await axios.get(
-      `http://localhost:8081/api${uri}`
-    ).then(response => {
+    
+    service.findById(identifier)
+    .then(response => {
       setCategories(response.data);
     }).catch(error => {
       showWarningMessage(error.response.data.message);

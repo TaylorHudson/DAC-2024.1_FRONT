@@ -7,19 +7,19 @@ import NavBar from "../../components/nav-bar/NavBar";
 import ProductTable from "../../components/table/ProductTable";
 import Text from "../../components/text/Text";
 import Spinner from "../../components/spinner/Spinner";
-import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
-import axios from "axios";
+import { showWarningMessage } from '../../components/toastr/Toastr';
+import ProductApiService from '../../services/ProductApiService';
 
 function FindProductView() {
+  const service = new ProductApiService();
   const history = useHistory();
   const [products, setProducts] = useState([]);
   const [identifier, setIdentifier] = useState("");
   const [loading, setLoading] = useState(true);
 
   async function findAll() {
-    await axios.get(
-      "http://localhost:8081/api/product"
-    ).then(response => {
+    service.findAll()
+    .then(response => {
       setProducts(response.data);
       setLoading(false);
     }).catch(error => {
@@ -32,13 +32,13 @@ function FindProductView() {
   }, []);
 
   async function handleOnClickFilterButton() {
-    let uri = "";
-    if (identifier) {
-      uri = `/${identifier}`;
+    if (!identifier) {
+      findAll();
+      return;
     }
-    await axios.get(
-      `http://localhost:8081/api/product${uri}`
-    ).then(response => {
+    
+    service.findById(identifier)
+    .then(response => {
       setProducts(response.data);
     }).catch(error => {
       showWarningMessage(error.response.data.message);

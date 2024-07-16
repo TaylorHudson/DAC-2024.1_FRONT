@@ -5,9 +5,10 @@ import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
 import { showErrorMessage, showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
-import axios from "axios";
+import ProductApiService from '../../services/ProductApiService';
 
 function CreateProductView() {
+  const service = new ProductApiService();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -21,8 +22,7 @@ function CreateProductView() {
       return;
     }
 
-    await axios.post(
-      "http://localhost:8081/api/product",
+    service.create(
       {
         name,
         description,

@@ -6,9 +6,10 @@ import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
 import { showErrorMessage, showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
-import axios from "axios";
+import ProductApiService from '../../services/ProductApiService';
 
 function UpdateProductView() {
+  const service = new ProductApiService();
   const params = useParams();
   const id = params.id;
   const [name, setName] = useState("");
@@ -18,9 +19,8 @@ function UpdateProductView() {
   const [categoryId, setCategoryId] = useState("");
 
   async function find() {
-    await axios.get(
-      `http://localhost:8081/api/product/${id}`
-    ).then(response => {
+    service.findById(id)
+    .then(response => {
       const product = response.data;
       setName(product.name);
       setDescription(product.description);
@@ -43,8 +43,7 @@ function UpdateProductView() {
       return;
     }
 
-    await axios.put(
-      `http://localhost:8081/api/product`,
+    service.update(
       {
         id,
         name,

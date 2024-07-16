@@ -1,5 +1,5 @@
 import React from 'react'
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
@@ -7,19 +7,18 @@ import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
 import { showErrorMessage, showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
-import axios from 'axios';
+import CategoryApiService from '../../services/CategoryApiService';
 
 function UpdateCategoryView() {
-  const history = useHistory();
+  const service = new CategoryApiService();
   const params = useParams();
   const id = params.id;
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
   async function find() {
-    await axios.get(
-      `http://localhost:8081/api/category/${id}`
-    ).then(response => {
+    service.findById(id)
+    .then(response => {
       const category = response.data;
       setName(category.name);
       setDescription(category.description);
@@ -39,8 +38,7 @@ function UpdateCategoryView() {
       return;
     }
 
-    await axios.put(
-      `http://localhost:8081/api/category`,
+    service.update(
       {
         id,
         name,
