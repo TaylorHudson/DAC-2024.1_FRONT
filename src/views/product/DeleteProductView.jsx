@@ -15,9 +15,8 @@ function DeleteProductView() {
   const [identifier, setIdentifier] = useState(id);
 
   async function handleOnClick() {
-    service.delete(
-      `http://localhost:8081/api/product/${identifier}`
-    ).then(response => {
+    service.delete(identifier)
+    .then(response => {
       showSuccessMessage("Produto deletado com sucesso!");
       clearFields();
     }).catch(error => {
