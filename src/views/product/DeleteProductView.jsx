@@ -1,35 +1,37 @@
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useState } from "react";
 import Button from "../../components/button/Button";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import NavBar from "../../components/nav-bar/NavBar";
 import Text from "../../components/text/Text";
-import { useState } from "react";
-import axios from "axios";
+import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
+import ProductApiService from '../../services/ProductApiService';
 
 function DeleteProductView() {
+  const service = new ProductApiService();
   const params = useParams();
   const id = params.id;
-  const history = useHistory();
   const [identifier, setIdentifier] = useState(id);
 
   async function handleOnClick() {
-    if (identifier) {
-      await axios.delete(
-        `http://localhost:8081/api/product/${id}`
-      ).then(response => {
-        console.log(response);
-        history.push("/product/find");
-      }).catch(error => {
-        console.log(error.response);
-      });      
-    }
+    service.delete(identifier)
+    .then(response => {
+      showSuccessMessage("Produto deletado com sucesso!");
+      clearFields();
+    }).catch(error => {
+      showWarningMessage(error.response.data.message);
+    });      
   }
 
   const handleOnChangeIdentifier = (e) => {
     const inputValue = e.target.value;
     const formattedValue = inputValue.replace(/[^0-9]/g, '');
     setIdentifier(formattedValue);
+  }
+
+  const clearFields = () => {
+    setIdentifier("");
   }
 
   return (
@@ -55,6 +57,7 @@ function DeleteProductView() {
             placeholder="Identificador"
             value={identifier}
             handleOnChange={handleOnChangeIdentifier}
+            disabled={true}
           />
 
           <div className="d-flex justify-content-center align-itens-center">

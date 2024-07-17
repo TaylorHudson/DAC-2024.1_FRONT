@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useHistory } from 'react-router-dom';
 import Button from "../../components/button/Button";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
@@ -6,24 +7,23 @@ import NavBar from "../../components/nav-bar/NavBar";
 import ProductTable from "../../components/table/ProductTable";
 import Text from "../../components/text/Text";
 import Spinner from "../../components/spinner/Spinner";
-import { useHistory } from 'react-router-dom';
-import axios from "axios";
+import { showWarningMessage } from '../../components/toastr/Toastr';
+import ProductApiService from '../../services/ProductApiService';
 
 function FindProductView() {
+  const service = new ProductApiService();
   const history = useHistory();
   const [products, setProducts] = useState([]);
   const [identifier, setIdentifier] = useState("");
   const [loading, setLoading] = useState(true);
 
   async function findAll() {
-    await axios.get(
-      "http://localhost:8081/api/product"
-    ).then(response => {
-      console.log(response);
+    service.findAll()
+    .then(response => {
       setProducts(response.data);
       setLoading(false);
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });      
   }
 
@@ -31,25 +31,24 @@ function FindProductView() {
     findAll();
   }, []);
 
+  async function handleOnClickFilterButton() {
+    if (!identifier) {
+      findAll();
+      return;
+    }
+    
+    service.findById(identifier)
+    .then(response => {
+      setProducts(response.data);
+    }).catch(error => {
+      showWarningMessage(error.response.data.message);
+    });
+  }
+
   const handleOnChangeIdentifier = (e) => {
     const inputValue = e.target.value;
     const formattedValue = inputValue.replace(/[^0-9]/g, '');
     setIdentifier(formattedValue);
-  }
-
-  async function handleOnClickFilterButton() {
-    let uri = "";
-    if (identifier) {
-      uri = `/${identifier}`;
-    }
-    await axios.get(
-      `http://localhost:8080/api/product${uri}`
-    ).then(response => {
-      console.log(response);
-      setProducts(response.data);
-    }).catch(error => {
-      console.log(error.response);
-    });
   }
 
   const handleEditButton = (id) => history.push(`/product/update/${id}`);

@@ -1,30 +1,29 @@
 import React from 'react'
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
-import { useHistory, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from 'axios';
+import { showErrorMessage, showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
+import CategoryApiService from '../../services/CategoryApiService';
 
 function UpdateCategoryView() {
-  const history = useHistory();
+  const service = new CategoryApiService();
   const params = useParams();
   const id = params.id;
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
   async function find() {
-    await axios.get(
-      `http://localhost:8081/api/category/${id}`
-    ).then(response => {
-      console.log(response);
+    service.findById(id)
+    .then(response => {
       const category = response.data;
       setName(category.name);
       setDescription(category.description);
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });
   }
 
@@ -33,18 +32,23 @@ function UpdateCategoryView() {
   }, []);
 
   async function handleOnClick() {
-    await axios.put(
-      `http://localhost:8081/api/category`,
+    const [hasErrors, errors] = validateFields();
+    if (hasErrors) {
+      showErrors(errors);
+      return;
+    }
+
+    service.update(
       {
         id,
         name,
         description,
       }
     ).then(response => {
-      console.log(response);
-      history.push(`/category/find`);
+      showSuccessMessage("Categoria atualizada com sucesso!");
+      clearFields();
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });
   }
 
@@ -55,6 +59,31 @@ function UpdateCategoryView() {
   const handleOnChangeDescription = (e) => {
     setDescription(e.target.value);
   }
+
+  const clearFields = () => {
+    setName("");
+    setDescription("");
+  }
+
+  const validateFields = () => {
+    const errors = [];
+
+    if (!name) {
+      errors.push("Campo nome é obrigatório!");
+    }
+    if (!description) {
+      errors.push("Campo descrição é obrigatório!");
+    }
+
+    const hasErrors = errors.length > 0;
+    return [hasErrors, errors];
+  }
+
+  const showErrors = (errors) => {
+    errors.forEach((message, index) => {
+      showErrorMessage(message);
+    });
+  } 
 
   return (
     <div className="container">

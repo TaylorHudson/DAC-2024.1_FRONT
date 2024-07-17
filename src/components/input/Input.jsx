@@ -1,6 +1,6 @@
 import './input.css';
 
-function Input({ type = "text", placeholder, value, handleOnChange }) {
+function Input({ type = "text", placeholder, value, handleOnChange, disabled = false }) {
   return (
     <div className="input-text-container">
       <input
@@ -11,6 +11,7 @@ function Input({ type = "text", placeholder, value, handleOnChange }) {
         onChange={handleOnChange}
         autoComplete={type === "password" ? "on" : "off"}
         required
+        disabled={disabled}
       />
     </div>
   );

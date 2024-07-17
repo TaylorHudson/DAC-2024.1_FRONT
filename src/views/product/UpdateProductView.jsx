@@ -1,14 +1,15 @@
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
-import { useHistory, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { showErrorMessage, showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
+import ProductApiService from '../../services/ProductApiService';
 
 function UpdateProductView() {
-  const history = useHistory();
+  const service = new ProductApiService();
   const params = useParams();
   const id = params.id;
   const [name, setName] = useState("");
@@ -18,10 +19,8 @@ function UpdateProductView() {
   const [categoryId, setCategoryId] = useState("");
 
   async function find() {
-    await axios.get(
-      `http://localhost:8081/api/product/${id}`
-    ).then(response => {
-      console.log(response);
+    service.findById(id)
+    .then(response => {
       const product = response.data;
       setName(product.name);
       setDescription(product.description);
@@ -29,7 +28,7 @@ function UpdateProductView() {
       setImage(product.images[0]);
       setCategoryId(product.categoryId);
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });      
   }
 
@@ -38,8 +37,13 @@ function UpdateProductView() {
   }, []);
 
   async function handleOnClick() {
-    await axios.put(
-      `http://localhost:8081/api/product`,
+    const [hasErrors, errors] = validateFields();
+    if (hasErrors) {
+      showErrors(errors);
+      return;
+    }
+
+    service.update(
       {
         id,
         name,
@@ -49,10 +53,10 @@ function UpdateProductView() {
         categoryId
       }
     ).then(response => {
-      console.log(response);
-      history.push(`/product/find`);
+      showSuccessMessage("Produto atualizado com sucesso!");
+      clearFields();
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });      
   }
 
@@ -80,6 +84,40 @@ function UpdateProductView() {
     setCategoryId(formattedCategoryId);
   }
 
+  const clearFields = () => {
+    setName("");
+    setDescription("");
+    setPrice("");
+    setImage("");
+    setCategoryId("");
+  } 
+
+  const validateFields = () => {
+    const errors = [];
+
+    if (!name) {
+      errors.push("Campo nome é obrigatório!");
+    }
+    if (!description) {
+      errors.push("Campo descrição é obrigatório!");
+    }
+    if (!price) {
+      errors.push("Campo preço é obrigatório!");
+    }
+    if (!categoryId) {
+      errors.push("Campo id da categoria é obrigatório!");
+    }
+
+    const hasErrors = errors.length > 0;
+    return [hasErrors, errors];
+  }
+
+  const showErrors = (errors) => {
+    errors.forEach((message, index) => {
+      showErrorMessage(message);
+    });
+  } 
+  
   return (
     <div className="container">
       <NavBar />

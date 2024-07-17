@@ -5,10 +5,11 @@ import Input from "../../components/input/Input";
 import Text from "../../components/text/Text";
 import Button from "../../components/button/Button";
 import NavBar from "../../components/nav-bar/NavBar";
-import axios from "axios";
+import { showErrorMessage, showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
+import ProductApiService from '../../services/ProductApiService';
 
 function CreateProductView() {
-  const history = useHistory();
+  const service = new ProductApiService();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -16,8 +17,13 @@ function CreateProductView() {
   const [categoryId, setCategoryId] = useState("");
 
   async function handleOnClick() {
-    await axios.post(
-      "http://localhost:8081/api/product",
+    const [hasErrors, errors] = validateFields();
+    if (hasErrors) {
+      showErrors(errors);
+      return;
+    }
+
+    service.create(
       {
         name,
         description,
@@ -26,10 +32,10 @@ function CreateProductView() {
         categoryId
       }
     ).then(response => {
-      console.log(response);
-      history.push("/product/find");
+      showSuccessMessage("Produto criado com sucesso!");
+      clearFields();
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });            
   }
 
@@ -56,6 +62,40 @@ function CreateProductView() {
     const formattedCategoryId = inputValue.replace(/[^0-9]/g, '');
     setCategoryId(formattedCategoryId);
   }
+
+  const clearFields = () => {
+    setName("");
+    setDescription("");
+    setPrice("");
+    setImage("");
+    setCategoryId("");
+  } 
+
+  const validateFields = () => {
+    const errors = [];
+
+    if (!name) {
+      errors.push("Campo nome é obrigatório!");
+    }
+    if (!description) {
+      errors.push("Campo descrição é obrigatório!");
+    }
+    if (!price) {
+      errors.push("Campo preço é obrigatório!");
+    }
+    if (!categoryId) {
+      errors.push("Campo id da categoria é obrigatório!");
+    }
+
+    const hasErrors = errors.length > 0;
+    return [hasErrors, errors];
+  }
+
+  const showErrors = (errors) => {
+    errors.forEach((message, index) => {
+      showErrorMessage(message);
+    });
+  } 
 
   return (
     <div className="container">

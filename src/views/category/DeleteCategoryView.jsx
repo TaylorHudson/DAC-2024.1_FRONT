@@ -1,35 +1,37 @@
 import { useState } from "react";
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Button from "../../components/button/Button";
 import Form from "../../components/form/Form";
 import Input from "../../components/input/Input";
 import NavBar from "../../components/nav-bar/NavBar";
 import Text from "../../components/text/Text";
-import axios from "axios";
+import { showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
+import CategoryApiService from '../../services/CategoryApiService';
 
 function DeleteCategoryView() {
+  const service = new CategoryApiService();
   const params = useParams();
   const id = params.id;
-  const history = useHistory();
   const [identifier, setIdentifier] = useState(id);
 
   async function handleOnClick() {
-    if (identifier) {
-      await axios.delete(
-        `http://localhost:8081/api/category/${id}`
-      ).then(response => {
-        console.log(response);
-        history.push("/category/find");
-      }).catch(error => {
-        console.log(error.response);
-      });
-    }
+    service.delete(id)
+    .then(response => {
+      showSuccessMessage("Categoria deletada com sucesso!");
+      clearFields();
+    }).catch(error => {
+      showWarningMessage(error.response.data.message);
+    });
   }
 
   const handleOnChangeIdentifier = (e) => {
     const inputValue = e.target.value;
     const formattedValue = inputValue.replace(/[^0-9]/g, '');
     setIdentifier(formattedValue);
+  }
+
+  const clearFields = () => {
+    setIdentifier("");
   }
 
   return (
@@ -55,6 +57,7 @@ function DeleteCategoryView() {
             placeholder="Identificador"
             value={identifier}
             handleOnChange={handleOnChangeIdentifier}
+            disabled={true}
           />
 
           <div className="d-flex justify-content-center align-itens-center">

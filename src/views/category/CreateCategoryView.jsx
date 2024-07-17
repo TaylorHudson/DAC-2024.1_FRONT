@@ -4,26 +4,32 @@ import Form from '../../components/form/Form';
 import Button from "../../components/button/Button";
 import NavBar from '../../components/nav-bar/NavBar';
 import Input from '../../components/input/Input';
-import Text from '../../components/text/Text'
-import axios from 'axios';
+import Text from '../../components/text/Text';
+import { showErrorMessage, showSuccessMessage, showWarningMessage } from '../../components/toastr/Toastr';
+import CategoryApiService from '../../services/CategoryApiService';
 
 function CreateCategoryView() {
-  const history = useHistory();
+  const service = new CategoryApiService();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
   async function handleOnClick() {
-    await axios.post(
-      "http://localhost:8081/api/category",
+    const [hasErrors, errors] = validateFields();
+    if (hasErrors) {
+      showErrors(errors);
+      return;
+    }
+
+    service.create(
       {
         name,
         description,
       }
     ).then(response => {
-      console.log(response);
-      history.push("/category/find");
+      showSuccessMessage("Categoria criada com sucesso!")
+      clearFields();
     }).catch(error => {
-      console.log(error.response);
+      showWarningMessage(error.response.data.message);
     });
   }
 
@@ -34,6 +40,31 @@ function CreateCategoryView() {
   const handleOnChangeDescription = (e) => {
     setDescription(e.target.value);
   }
+
+  const clearFields = () => {
+    setName("");
+    setDescription("");
+  }
+
+  const validateFields = () => {
+    const errors = [];
+
+    if (!name) {
+      errors.push("Campo nome é obrigatório!");
+    }
+    if (!description) {
+      errors.push("Campo descrição é obrigatório!");
+    }
+
+    const hasErrors = errors.length > 0;
+    return [hasErrors, errors];
+  }
+
+  const showErrors = (errors) => {
+    errors.forEach((message, index) => {
+      showErrorMessage(message);
+    });
+  } 
 
   return (
     <div className="container">
