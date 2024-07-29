@@ -1,8 +1,10 @@
 import React from 'react'
 
-function DropdownItem({href, itemName}) {
+function DropdownItem({href = undefined, itemName, onClick = () => {} }) {
   return (
-    <a className="dropdown-item" href={href}>{itemName}</a>
+    <a className="dropdown-item" onClick={onClick} href={href}>
+      {itemName} 
+    </a>
   );
 }
 

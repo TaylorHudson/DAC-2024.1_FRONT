@@ -2,8 +2,11 @@ import Logo from "../../assets/logo.jpg";
 import Dropdown from "../dropdown/Dropdown";
 import NavBarItem from "./NavBarItem";
 import DropdownItem from "../dropdown/DropdownItem";
+import AuthenticationApiService from "../../services/AuthenticationApiService";
 
 function NavBar() {
+  const service = new AuthenticationApiService();
+
   return (
     <nav className="navbar navbar-expand-lg border-bottom">
       <div className="container-fluid">
@@ -22,6 +25,17 @@ function NavBar() {
               <Dropdown dropdownName="Categoria">
                 <DropdownItem itemName="Cadastrar categoria" href="/category/create" />
                 <DropdownItem itemName="Buscar categorias" href="/category/find" />
+              </Dropdown>
+            </NavBarItem>
+            <NavBarItem>
+              <Dropdown dropdownName="Usuário">
+                <DropdownItem itemName="Cadastrar usuário" href="/user/create" />
+                <DropdownItem itemName="Buscar usuários" href="/user/find" />
+              </Dropdown>
+            </NavBarItem>
+            <NavBarItem>
+              <Dropdown dropdownName="Configurações">
+                <DropdownItem itemName="Sair" href={"/login"} onClick={service.logout} />
               </Dropdown>
             </NavBarItem>
           </ul>
